@@ -10,74 +10,88 @@
 <head>
     <script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/16a48f5d352/bf25108lzj/eb8e96bcb95f32a3_complete.js" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zen Strike | GeoCapitale</title>
+    <title>Zen Strike | Geo-Observability</title>
     
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        :root { --primary: #007bff; --bg: #0f172a; }
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: var(--bg); color: white;
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; margin: 0; 
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 2.5rem; border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            text-align: center; width: 350px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        h1 { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--primary); }
-        select {
-            width: 100%; padding: 12px; border-radius: 8px;
-            background: #1e293b; color: white; border: 1px solid #334155;
-            font-size: 1rem; cursor: pointer; margin-bottom: 20px;
-        }
-        .result-box {
-            height: 60px; display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.2); border-radius: 10px; font-weight: bold;
-        }
-        .tag { font-size: 0.7rem; opacity: 0.5; margin-top: 20px; display: block; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #0f172a; color: white; display: flex; flex-direction: column; height: 100vh; }
+        header { padding: 1rem; background: #1e293b; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        #main-container { display: flex; flex: 1; overflow: hidden; }
+        #sidebar { width: 350px; padding: 2rem; background: #1e293b; border-right: 1px solid #334155; }
+        #map { flex: 1; background: #111; }
+        select { width: 100%; padding: 12px; border-radius: 8px; background: #334155; color: white; border: 1px solid #475569; margin-bottom: 20px; }
+        .stat-card { background: #0f172a; padding: 1rem; border-radius: 10px; margin-top: 20px; border-left: 4px solid #6366f1; }
+        .status-online { color: #10b981; font-size: 0.8rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🌍 GeoCapitale</h1>
-        <p>Sélectionnez un pays :</p>
+<header>
+    <h1>Zen Strike Geo-Monitor</h1>
+    <span class="status-online">● DYNATRACE REAL-TIME MONITORING ENABLED</span>
+</header>
+
+<div id="main-container">
+    <div id="sidebar">
+        <h3>Exploration</h3>
+        <p style="color: #94a3b8; font-size: 0.9rem;">Sélectionnez un pays pour déclencher une requête XHR et mettre à jour la carte.</p>
         
-        <select id="countrySelect" onchange="showCapital()">
-            <option value="">-- Choisir --</option>
-            <option value="Alger">Algérie</option>
-            <option value="Paris">France</option>
-            <option value="Ottawa">Canada</option>
-            <option value="Tokyo">Japon</option>
-            <option value="Madrid">Espagne</option>
-            <option value="Rome">Italie</option>
+        <select id="countrySelect">
+            <option value="">-- Choisir un pays --</option>
+            <option value="Algeria">Algérie</option>
+            <option value="France">France</option>
+            <option value="Canada">Canada</option>
+            <option value="Japan">Japon</option>
+            <option value="Brazil">Brésil</option>
         </select>
 
-        <div class="result-box" id="result">
-            En attente...
+        <div id="details" class="stat-card">
+            <strong>Capitale :</strong> <span id="capitale">-</span><br>
+            <strong>XHR Status :</strong> <span id="xhr-status">Idle</span>
         </div>
-
-        <span class="tag">Monitoré en temps réel par Dynatrace</span>
     </div>
+    <div id="map"></div>
+</div>
 
-    <script>
-        function showCapital() {
-            const select = document.getElementById('countrySelect');
-            const result = document.getElementById('result');
-            const capital = select.value;
-            
-            if (capital) {
-                result.innerHTML = `La capitale est : <span style="color:#007bff; margin-left:5px;">${capital}</span>`;
-                // Dynatrace captera cet événement automatiquement !
-            } else {
-                result.innerText = "En attente...";
-            }
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Initialisation de la carte
+    var map = L.map('map').setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const select = document.getElementById('countrySelect');
+
+    select.addEventListener('change', async (e) => {
+        const country = e.target.value;
+        if (!country) return;
+
+        document.getElementById('xhr-status').innerText = "Requesting API...";
+        document.getElementById('xhr-status').style.color = "#fbbf24";
+
+        try {
+            // Cette ligne génère une "XHR Action" dans Dynatrace
+            const response = await fetch(`https://restcountries.com/v3.1/name/${country}`);
+            const data = await response.json();
+            const countryData = data[0];
+            const latlng = countryData.latlng;
+            const capital = countryData.capital[0];
+
+            // Mise à jour de l'interface
+            document.getElementById('capitale').innerText = capital;
+            document.getElementById('xhr-status').innerText = "Success (200 OK)";
+            document.getElementById('xhr-status').style.color = "#10b981";
+
+            // Animation de la carte
+            map.flyTo(latlng, 5);
+            L.marker(latlng).addTo(map).bindPopup(`<b>${capital}</b>`).openPopup();
+
+        } catch (error) {
+            document.getElementById('xhr-status').innerText = "Error";
+            document.getElementById('xhr-status').style.color = "#ef4444";
         }
-    </script>
+    });
+</script>
 </body>
 </html>
