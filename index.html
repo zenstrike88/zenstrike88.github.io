@@ -1,23 +1,83 @@
+
+
+#<script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/16a48f5d352/bf25108lzj/eb8e96bcb95f32a3_complete.js" crossorigin="anonymous"></script>
+
+
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/16a48f5d352/bf25108lzj/eb8e96bcb95f32a3_complete.js" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zen Strike | Portfolio</title>
+    <title>Zen Strike | GeoCapitale</title>
+    
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
-        .card { background: white; padding: 2rem; border-radius: 10px; shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        h1 { color: #333; }
-        p { color: #666; }
-        .tag { background: #007bff; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; }
+        :root { --primary: #007bff; --bg: #0f172a; }
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg); color: white;
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; 
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem; border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: center; width: 350px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--primary); }
+        select {
+            width: 100%; padding: 12px; border-radius: 8px;
+            background: #1e293b; color: white; border: 1px solid #334155;
+            font-size: 1rem; cursor: pointer; margin-bottom: 20px;
+        }
+        .result-box {
+            height: 60px; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.2); border-radius: 10px; font-weight: bold;
+        }
+        .tag { font-size: 0.7rem; opacity: 0.5; margin-top: 20px; display: block; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Zen Strike</h1>
-        <p>Consultant en Observabilité & Cloud</p>
-        <span class="tag">Monitoré par Dynatrace</span>
+
+    <div class="container">
+        <h1>🌍 GeoCapitale</h1>
+        <p>Sélectionnez un pays :</p>
+        
+        <select id="countrySelect" onchange="showCapital()">
+            <option value="">-- Choisir --</option>
+            <option value="Alger">Algérie</option>
+            <option value="Paris">France</option>
+            <option value="Ottawa">Canada</option>
+            <option value="Tokyo">Japon</option>
+            <option value="Madrid">Espagne</option>
+            <option value="Rome">Italie</option>
+        </select>
+
+        <div class="result-box" id="result">
+            En attente...
+        </div>
+
+        <span class="tag">Monitoré en temps réel par Dynatrace</span>
     </div>
+
+    <script>
+        function showCapital() {
+            const select = document.getElementById('countrySelect');
+            const result = document.getElementById('result');
+            const capital = select.value;
+            
+            if (capital) {
+                result.innerHTML = `La capitale est : <span style="color:#007bff; margin-left:5px;">${capital}</span>`;
+                // Dynatrace captera cet événement automatiquement !
+            } else {
+                result.innerText = "En attente...";
+            }
+        }
+    </script>
 </body>
 </html>
