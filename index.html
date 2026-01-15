@@ -9,32 +9,141 @@
 <html lang="fr">
 <head>
     <script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/16a48f5d352/bf25108lzj/eb8e96bcb95f32a3_complete.js" crossorigin="anonymous"></script>
+    
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zen Strike | Geo-Observability</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #0f172a; color: white; display: flex; flex-direction: column; height: 100vh; }
-        header { padding: 1rem; background: #1e293b; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --accent: #6366f1;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+        }
+
+        header { 
+            padding: 1rem 2rem; 
+            background: var(--panel-bg); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; letter-spacing: 1px; }
+
         #main-container { display: flex; flex: 1; overflow: hidden; }
-        #sidebar { width: 350px; padding: 2rem; background: #1e293b; border-right: 1px solid #334155; }
+
+        #sidebar { 
+            width: 350px; 
+            padding: 1.5rem; 
+            background: var(--panel-bg); 
+            border-right: 1px solid #334155;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+            display: block;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 5px;
+        }
+
         #map { flex: 1; background: #111; }
-        select { width: 100%; padding: 12px; border-radius: 8px; background: #334155; color: white; border: 1px solid #475569; margin-bottom: 20px; }
-        .stat-card { background: #0f172a; padding: 1rem; border-radius: 10px; margin-top: 20px; border-left: 4px solid #6366f1; }
-        .status-online { color: #10b981; font-size: 0.8rem; font-weight: bold; }
+
+        /* Formulaire & Boutons */
+        select { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 8px; 
+            background: #334155; 
+            color: white; 
+            border: 1px solid #475569; 
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-error { background: var(--danger); color: white; }
+        .btn-error:hover { background: #b91c1c; transform: translateY(-1px); }
+
+        .btn-warn { background: var(--warning); color: #0f172a; }
+        .btn-warn:hover { background: #d97706; transform: translateY(-1px); }
+
+        /* Cards */
+        .stat-card { 
+            background: var(--bg-dark); 
+            padding: 1.2rem; 
+            border-radius: 12px; 
+            margin-top: auto; 
+            border: 1px solid #334155;
+        }
+
+        .status-online { 
+            color: var(--success); 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            background: rgba(16, 185, 129, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        #xhr-status { font-weight: bold; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Zen Strike Geo-Monitor</h1>
-    <span class="status-online">● DYNATRACE REAL-TIME MONITORING ENABLED</span>
+    <div>
+        <h1>ZEN STRIKE <span style="font-weight: 300; color: var(--accent);">GEO-MONITOR</span></h1>
+    </div>
+    <span class="status-online">● DYNATRACE REAL-TIME MONITORING</span>
 </header>
 
 <div id="main-container">
     <div id="sidebar">
-        <h3>Exploration</h3>
-        <p style="color: #94a3b8; font-size: 0.9rem;">Sélectionnez un pays pour déclencher une requête XHR et mettre à jour la carte.</p>
+        
+        <span class="section-title">Exploration & API</span>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0;">Sélectionnez une destination pour générer du trafic XHR.</p>
         
         <select id="countrySelect">
             <option value="">-- Choisir un pays --</option>
@@ -43,59 +152,119 @@
             <option value="Canada">Canada</option>
             <option value="Japan">Japon</option>
             <option value="Brazil">Brésil</option>
+            <option value="Australia">Australie</option>
         </select>
 
-        <button onclick="calculerTotalInexistant()" style="margin-top:10px; padding:10px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">
-    Calculer Statistiques (Bouton Erreur)
+        <span class="section-title">Stress Testing (Dynatrace)</span>
+        
+        <button onclick="triggerJSException()" class="btn btn-error">
+            <span>🔥</span> Trigger JS Crash
+        </button>
+
+        <button onclick="triggerLatency()" class="btn btn-warn">
+            <span>⏳</span> Simulate Latency (5s)
+        </button>
+
+        <button onclick="trigger404()" class="btn btn-warn" style="background: #64748b; color: white;">
+            <span>🚫</span> Force 404 Error
         </button>
 
         <div id="details" class="stat-card">
-            <strong>Capitale :</strong> <span id="capitale">-</span><br>
-            <strong>XHR Status :</strong> <span id="xhr-status">Idle</span>
+            <div style="margin-bottom: 10px;">
+                <small style="color: var(--text-muted)">CAPITALE</small><br>
+                <span id="capitale" style="font-size: 1.2rem; color: var(--accent);">-</span>
+            </div>
+            <div>
+                <small style="color: var(--text-muted)">XHR STATUS</small><br>
+                <span id="xhr-status" style="color: var(--text-muted);">Idle</span>
+            </div>
         </div>
     </div>
+
     <div id="map"></div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-    // Initialisation de la carte
+    // Initialisation de la carte avec un style sombre
     var map = L.map('map').setView([20, 0], 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(map);
 
     const select = document.getElementById('countrySelect');
+    const xhrLabel = document.getElementById('xhr-status');
 
+    // --- FONCTION PRINCIPALE : XHR & CARTE ---
     select.addEventListener('change', async (e) => {
         const country = e.target.value;
         if (!country) return;
 
-        document.getElementById('xhr-status').innerText = "Requesting API...";
-        document.getElementById('xhr-status').style.color = "#fbbf24";
+        xhrLabel.innerText = "Requesting API...";
+        xhrLabel.style.color = "#fbbf24";
 
         try {
-            // Cette ligne génère une "XHR Action" dans Dynatrace
             const response = await fetch(`https://restcountries.com/v3.1/name/${country}`);
+            if (!response.ok) throw new Error("API Error");
+            
             const data = await response.json();
             const countryData = data[0];
             const latlng = countryData.latlng;
             const capital = countryData.capital[0];
 
-            // Mise à jour de l'interface
             document.getElementById('capitale').innerText = capital;
-            document.getElementById('xhr-status').innerText = "Success (200 OK)";
-            document.getElementById('xhr-status').style.color = "#10b981";
+            xhrLabel.innerText = "Success (200 OK)";
+            xhrLabel.style.color = "#10b981";
 
-            // Animation de la carte
             map.flyTo(latlng, 5);
             L.marker(latlng).addTo(map).bindPopup(`<b>${capital}</b>`).openPopup();
 
         } catch (error) {
-            document.getElementById('xhr-status').innerText = "Error";
-            document.getElementById('xhr-status').style.color = "#ef4444";
+            xhrLabel.innerText = "XHR Failure";
+            xhrLabel.style.color = "#ef4444";
         }
     });
+
+    // --- FONCTIONS DE TEST DYNATRACE ---
+
+    // 1. Erreur JavaScript (S'affichera dans l'onglet Errors de l'app Dynatrace)
+    function triggerJSException() {
+        console.log("Generating JS Exception...");
+        try {
+            // Provoque une erreur car cette variable n'existe pas
+            let result = dataFromUndefinedSource + 100;
+        } catch (e) {
+            console.error("Manual Triggered Error:", e.message);
+            // On re-throw pour que l'agent Dynatrace capture l'exception non gérée
+            throw e;
+        }
+    }
+
+    // 2. Latence Artificielle (S'affichera comme 'Slow User Action')
+    async function triggerLatency() {
+        xhrLabel.innerText = "Simulating Latency (5s)...";
+        xhrLabel.style.color = "#f59e0b";
+        
+        // On utilise un service externe pour forcer un délai réseau
+        await fetch('https://httpbin.org/delay/5');
+        
+        xhrLabel.innerText = "Latency Test Finished";
+        xhrLabel.style.color = "#10b981";
+    }
+
+    // 3. Erreur 404 (S'affichera dans les Web Request Errors)
+    function trigger404() {
+        xhrLabel.innerText = "Triggering 404...";
+        const img = new Image();
+        img.src = "/static/missing_asset_" + Math.random() + ".png";
+        
+        img.onerror = () => {
+            xhrLabel.innerText = "404 Error Captured";
+            xhrLabel.style.color = "#ef4444";
+        };
+    }
 </script>
+
 </body>
 </html>
