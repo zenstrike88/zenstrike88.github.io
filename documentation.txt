@@ -1,0 +1,45 @@
+---
+
+## 📘 Documentation Zen Strike Geo-Intelligence
+
+Cette interface est un simulateur d'incidents conçu pour tester la réactivité des dashboards Dynatrace et de l'IA Davis.
+
+### 1. Section : Géolocalisation
+
+| Action Utilisateur | Ce qui se passe (Code) | Vue Dynatrace (RUM) |
+| --- | --- | --- |
+| **Sélection d'un pays** | Appelle l'API `restcountries.com` via `fetch()`. | **XHR Monitoring** : Tu vois le temps de réponse réseau. Si tu as configuré les règles de nommage, l'action s'appellera `Search: France`. |
+| **Vol vers la cible** | Déclenche l'animation `map.flyTo()`. | **User Action Duration** : Mesure le temps que met l'interface à répondre visuellement. |
+
+---
+
+### 2. Section : Anomalies Réseau
+
+| Bouton | Description Technique | Impact Dynatrace |
+| --- | --- | --- |
+| **🔥 Force JS Crash** | Tente d'appeler une méthode sur un objet `null`. | **Top JavaScript Errors** : Une erreur `TypeError: Cannot read properties of null` apparaît avec la stack trace complète. L'Apdex chute. |
+| **🚫 Trigger 404** | Tente de charger une image sur une URL inexistante. | **Failure Requests** : Le widget "Requests 4xx" bondit. Davis peut détecter une augmentation du taux d'échec. |
+| **🧟 Zombie XHR** | Lance une requête vers une IP privée injoignable (`10.255.255.1`). | **Zombie Tracking** : La requête reste en état `Pending` jusqu'au timeout. Visible dans l'analyse multidimensionnelle comme une requête ultra-lente qui finit en échec. |
+
+---
+
+### 3. Section : Ressources & Stress
+
+| Bouton | Description Technique | Impact Dynatrace |
+| --- | --- | --- |
+| **🧠 CPU Burn (3s)** | Une boucle `while` bloque le thread principal du navigateur pendant 3000ms. | **Long Tasks** : Dynatrace détecte un blocage du thread principal > 50ms. Le site devient totalement figé, l'Apdex s'effondre. |
+| **🧪 Memory Leak** | Remplit un tableau global à l'infini avec des chaînes de caractères toutes les 500ms. | **Browser Memory Usage** : La courbe de RAM monte en ligne droite sur ton graphique. Davis peut signaler une "Memory Leak" si le navigateur finit par crasher. |
+| **🚀 Traffic Spike** | Lance instantanément 100 requêtes API en parallèle. | **XHR Performance** : Tu verras un pic massif du volume de requêtes. Idéal pour tester si Davis détecte un comportement anormal par rapport à la baseline. |
+
+---
+
+### 🔍 Résumé pour ton Dashboard
+
+Pour que ta doc soit parfaite, voici les **4 indicateurs clés** que tu dois surveiller sur ton Dashboard Dynatrace quand tu joues avec ces boutons :
+
+1. **Apdex Score** : Il doit être proche de **1.0** au repos, et descendre vers **0.5** dès que tu cliques sur *CPU Burn* ou *JS Crash*.
+2. **JavaScript Errors** : Doit passer de **0** à **1** (ou plus) dès que tu cliques sur *Force JS Crash*.
+3. **Action Duration** : Tu verras des pics de plusieurs secondes lors du *CPU Burn*.
+4. **XHR Failure Rate** : Augmentera brutalement avec le bouton *Zombie XHR*.
+
+---
