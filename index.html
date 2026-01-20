@@ -1,0 +1,276 @@
+
+
+#<script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/16a48f5d352/bf25108lzj/eb8e96bcb95f32a3_complete.js" crossorigin="anonymous"></script>
+
+
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen Strike | Geo-Intelligence Pro</title>
+
+    <script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/16a48f5d352/bf25108lzj/eb8e96bcb95f32a3_complete.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --panel-bg: #0f172a;
+            --accent: #818cf8;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --success: #22c55e;
+            --text-main: #f1f5f9;
+            --text-muted: #64748b;
+        }
+
+        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg-dark); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        header { 
+            padding: 0.8rem 2rem; 
+            background: var(--panel-bg); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #1e293b; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4); 
+            z-index: 1000;
+        }
+        
+        .logo { font-weight: 800; letter-spacing: -1px; font-size: 1.2rem; }
+        .logo span { color: var(--accent); font-weight: 300; }
+
+        #main-container { display: flex; flex: 1; overflow: hidden; }
+
+        #sidebar { 
+            width: 320px; 
+            padding: 1.2rem; 
+            background: var(--panel-bg); 
+            border-right: 1px solid #1e293b; 
+            overflow-y: auto; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        #map { flex: 1; background: #0b0e14; }
+
+        .section-title { 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            font-size: 0.65rem; 
+            font-weight: 700; 
+            margin: 1.2rem 0 0.8rem; 
+            letter-spacing: 1.5px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-title::after { content: ""; flex: 1; height: 1px; background: #1e293b; }
+
+        select { 
+            width: 100%; padding: 10px; border-radius: 6px; 
+            background: #020617; color: white; border: 1px solid #334155; 
+            margin-bottom: 10px; cursor: pointer; outline: none;
+        }
+
+        .btn { 
+            width: 100%; padding: 10px; border-radius: 6px; border: none; 
+            font-weight: 600; cursor: pointer; transition: all 0.2s; 
+            margin-bottom: 6px; font-size: 0.75rem; 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-error { background: #b91c1c; color: white; }
+        .btn-warn { background: #d97706; color: white; }
+        .btn-stress { background: #4f46e5; color: white; }
+        .btn-clear { background: transparent; border: 1px solid #334155; color: var(--text-muted); font-size: 0.65rem; padding: 4px; margin-top: 5px; }
+        .btn-clear:hover { background: #1e293b; color: white; }
+
+        .stat-card { background: #020617; padding: 1rem; border-radius: 8px; border: 1px solid #1e293b; margin-top: 10px; }
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.8rem; }
+        
+        /* TERMINAL LOG STYLE */
+        #console-container {
+            margin-top: auto;
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            min-height: 150px;
+        }
+        .console-header {
+            background: #1e293b;
+            padding: 6px 10px;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #console-body {
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            overflow-y: auto;
+            max-height: 180px;
+            flex-grow: 1;
+        }
+        .log-line { margin-bottom: 4px; border-left: 2px solid var(--accent); padding-left: 8px; animation: slideIn 0.2s ease-out; }
+        .log-time { color: #475569; margin-right: 6px; }
+        .log-msg-info { color: var(--accent); }
+        .log-msg-success { color: var(--success); }
+        .log-msg-error { color: var(--danger); font-weight: bold; }
+        .log-msg-warn { color: var(--warning); }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">ZEN STRIKE <span>GEO-INTELLIGENCE</span></div>
+    <div style="font-size: 0.7rem; color: var(--success); font-weight: bold;">● DYNATRACE ACTIVE</div>
+</header>
+
+<div id="main-container">
+    <aside id="sidebar">
+        <span class="section-title">Géolocalisation</span>
+        <select id="countrySelect">
+            <option value="">Sélectionner une cible...</option>
+            <option value="Algeria">Algérie</option>
+            <option value="France">France</option>
+            <option value="Canada">Canada</option>
+            <option value="Japan">Japon</option>
+            <option value="Brazil">Brésil</option>
+        </select>
+
+        <div id="country-info" class="stat-card" style="display:none;">
+            <div class="data-row"><span>Capitale:</span> <b id="cap-val" style="color:var(--accent)"></b></div>
+            <div id="cities-container" style="margin-top:8px;"></div>
+        </div>
+
+        <span class="section-title">Anomalies réseau</span>
+        <button onclick="triggerJSException()" class="btn btn-error">🔥 Force JS Crash</button>
+        <button onclick="trigger404()" class="btn btn-error" style="opacity:0.8">🚫 Trigger 404</button>
+        <button onclick="triggerZombieRequest()" class="btn btn-error" style="background:#450a0a">🧟 Zombie XHR</button>
+
+        <span class="section-title">Ressources & Stress</span>
+        <button onclick="triggerCPUStress()" class="btn btn-warn">🧠 CPU Burn (3s)</button>
+        <button onclick="triggerMemoryLeak()" class="btn btn-warn" style="background:#92400e">🧪 Memory Leak</button>
+        <button onclick="triggerTrafficSpike()" class="btn btn-stress">🚀 Traffic Spike (100 reqs)</button>
+
+        <div id="console-container">
+            <div class="console-header">
+                <span>SYSTEM MONITOR</span>
+                <button class="btn-clear" onclick="clearLogs()">CLEAR</button>
+            </div>
+            <div id="console-body"></div>
+        </div>
+    </aside>
+
+    <main id="map"></main>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // --- INITIALISATION MAP (DARK MODE) ---
+    const map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CartoDB'
+    }).addTo(map);
+
+    // --- GESTION DES LOGS ---
+    const consoleBody = document.getElementById('console-body');
+    
+    function log(msg, type = 'info') {
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+        
+        const newLine = document.createElement('div');
+        newLine.className = 'log-line';
+        newLine.innerHTML = `<span class="log-time">[${timeStr}]</span><span class="log-msg-${type}">${msg}</span>`;
+        
+        consoleBody.appendChild(newLine);
+        consoleBody.scrollTop = consoleBody.scrollHeight;
+    }
+
+    function clearLogs() {
+        consoleBody.innerHTML = '';
+        log("Console cleared", "info");
+    }
+
+    log("Initialisation du système terminée", "success");
+
+    // --- LOGIQUE PAYS ---
+    document.getElementById('countrySelect').addEventListener('change', async (e) => {
+        const country = e.target.value;
+        if (!country) return;
+        log(`Tracking sequence started: ${country}...`, "info");
+        try {
+            const res = await fetch(`https://restcountries.com/v3.1/name/${country}`);
+            const [data] = await res.json();
+            document.getElementById('cap-val').innerText = data.capital[0];
+            document.getElementById('country-info').style.display = 'block';
+            map.flyTo(data.latlng, 5);
+            L.marker(data.latlng).addTo(map);
+            log(`Coordonnées récupérées pour ${data.name.common}`, "success");
+        } catch (e) { 
+            log("Échec de la synchronisation API", "error"); 
+        }
+    });
+
+    // --- FONCTIONS DE CHALLENGE DYNATRACE ---
+
+    function triggerJSException() {
+        log("CRITICAL: Injecting runtime failure...", "error");
+        setTimeout(() => {
+            let obj = null;
+            obj.force_crash(); // Provoque un TypeError réel
+        }, 300);
+    }
+
+    function trigger404() {
+        log("Fetching non-existent resource...", "warn");
+        const img = new Image();
+        img.src = `/api/data/backup_${Math.floor(Math.random()*9999)}.json`;
+    }
+
+    function triggerCPUStress() {
+        log("CPU Stress Test: Blocking main thread...", "warn");
+        setTimeout(() => {
+            const start = Date.now();
+            while (Date.now() - start < 3000) {} 
+            log("CPU Stress Test completed", "success");
+        }, 100);
+    }
+
+    function triggerTrafficSpike() {
+        log("Traffic Spike: Outbound flooding (100 reqs)...", "warn");
+        for(let i=0; i<100; i++) {
+            fetch(`https://restcountries.com/v3.1/all?query=spike_${i}`);
+        }
+    }
+
+    let storage = [];
+    function triggerMemoryLeak() {
+        log("Memory Leak sequence initiated", "error");
+        setInterval(() => {
+            for(let i=0; i<1000; i++) storage.push(new Array(1000).fill("DYNATRACE_STRESS"));
+        }, 500);
+    }
+
+    function triggerZombieRequest() {
+        log("Zombie XHR: Attempting unreachable socket...", "warn");
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://10.255.255.1/metrics", true);
+        xhr.timeout = 10000;
+        xhr.send();
+    }
+</script>
+
+</body>
+</html>
