@@ -1,0 +1,4 @@
+/.github/ @ardian-france/devops
+CODEOWNERS @ardian-france/devops
+.prettierrc @ardian-france/devops
+.validate-branch-namerc.json @ardian-france/devops

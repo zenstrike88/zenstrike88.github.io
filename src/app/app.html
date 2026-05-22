@@ -1,0 +1,27 @@
+<header class="navbar">
+  <div class="nav-left">
+    <div class="logo-group">
+      <div class="logo-main">ARDIAN <span class="text-red">ITOPS</span></div>
+      <div class="logo-sig">DJY v1.0</div>
+    </div>
+    
+    <nav class="nav-links">
+      <button routerLink="/accueil" routerLinkActive="active">Accueil</button>
+      <button routerLink="/alertes" routerLinkActive="active">Alertes</button>
+      <button routerLink="/performance" routerLinkActive="active">Performance</button>
+    </nav>
+
+  <div class="status-tag">
+      <span class="dot"></span>
+      Monitoré par Dynatrace
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <button class="btn-login">Login</button>
+  </div>
+</header>
+
+<main class="container">
+  <router-outlet></router-outlet>
+</main>
