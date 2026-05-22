@@ -20,16 +20,17 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/dyn-front",
+            "outputPath": "public",
             "index": "src/index.html", 
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
+                "assets": [
+                  {
+                    "glob": "**/*",
+                    "input": "src/assets"
+                  },
+                  "src/favicon.ico"
+                ],
             "styles": [
               "node_modules/leaflet/dist/leaflet.css",
               "src/styles.css"
