@@ -1,0 +1,142 @@
+/* Style global */
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #020617;
+  color: white;
+  min-height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 64px;
+  
+  /* REMPLACEMENT : On passe d'un bleu presque noir (#0f172a) à un gris-bleu plus ouvert */
+  background-color: #000203; 
+  
+  /* OPTIONNEL : On peut aussi éclaircir la bordure pour donner du relief */
+  border-bottom: 1px solid #334155;
+  
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* On remplace l'ancien .logo par celui-ci */
+.logo-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.1; /* Pour rapprocher le titre et la signature */
+}
+
+.logo-main {
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #ffffff; /* On passe en blanc pour le côté premium */
+  letter-spacing: 0.5px;
+  font-size: 1.1rem;
+}
+
+.text-red {
+  color: #09df09;
+}
+
+/* La signature DJY que l'on ajoute juste en dessous */
+.logo-sig {
+  font-size: 0.6rem;
+  color: #ffffff; /* Gris acier comme tes boutons */
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-links button {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-links button:hover {
+  color: white;
+  background: #334155; /* Un gris un peu plus clair pour le feedback */
+}
+
+.nav-links button.active {
+  color: white;
+  background: #334155;
+}
+
+/* Badge Dynatrace */
+.status-tag {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #4ade80;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+
+  white-space: nowrap; /* Évite que le texte revienne à la ligne */
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #22c55e;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.9); }
+}
+
+/* Bouton Login */
+.btn-login {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-login:hover {
+  background: #4338ca;
+}
+
+.container {
+  padding: 0;
+}

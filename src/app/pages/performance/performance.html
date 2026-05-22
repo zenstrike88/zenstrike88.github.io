@@ -1,0 +1,86 @@
+<div class="performance-wrapper">
+  <header class="header">
+    <h1>Laboratoire d'Expérience Utilisateur</h1>
+    <p class="subtitle">
+      Utilisez ces outils pour simuler des problèmes de navigation et vérifier comment 
+      <strong>Dynatrace</strong> analyse la qualité ressentie par vos clients.
+    </p>
+  </header>
+
+  <div class="grid-container">
+    
+    <section class="card" aria-labelledby="speed-title">
+      <div class="card-icon">🚀</div>
+      <span class="label">Perception de la vitesse</span>
+      <h3 id="speed-title">Vitesse d'affichage</h3>
+      <p class="description">Testez comment le navigateur réagit lors du chargement d'éléments lourds ou de serveurs lents.</p>
+      
+      <div class="action-group">
+        <button (click)="triggerSlowLCP()" class="btn-action" title="Simule le chargement d'une image haute résolution (LCP)">
+          Image Haute Définition
+        </button>
+        <button (click)="triggerNetworkDelay()" [disabled]="isNetworkLoading" class="btn-action" title="Simule une réponse serveur très lente (TTFB)">
+          {{ isNetworkLoading ? 'Connexion en cours...' : 'Serveur Lent (5s)' }}
+        </button>
+      </div>
+
+      <div class="preview-zone" *ngIf="slowImageSrc">
+        <div class="loader-overlay" *ngIf="!imageLoaded">Chargement...</div>
+        <img [src]="slowImageSrc" (load)="imageLoaded = true" alt="Test de performance visuelle" class="responsive-img">
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="comfort-title">
+      <div class="card-icon">📏</div>
+      <span class="label">Stabilité de la page</span>
+      <h3 id="comfort-title">Confort visuel</h3>
+      <p class="description">Simulez des éléments qui apparaissent brusquement et décalent le texte (frustrant pour l'utilisateur).</p>
+      
+      <button (click)="triggerLayoutShift()" class="btn-action">
+        Déclencher un décalage (CLS)
+      </button>
+
+      <div class="content-simulation">
+        <p>Lisez ce paragraphe : Dynatrace mesure si le contenu bouge pendant que vous l'utilisez...</p>
+        <div *ngIf="layoutShiftActive" class="dynamic-content">
+          <span>⚠️ PUB / BANNIÈRE INJECTÉE</span>
+        </div>
+        <p>... si ce texte descend d'un coup, le score de stabilité (CLS) augmente.</p>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="error-title">
+      <div class="card-icon">❌</div>
+      <span class="label">Santé de l'application</span>
+      <h3 id="error-title">Erreurs & Multimédia</h3>
+      <p class="description">Vérifiez si Dynatrace capture bien les pannes sur les vidéos ou les liens cassés.</p>
+      
+      <div class="action-group">
+        <button (click)="triggerVideoError()" class="btn-error">Crasher la Vidéo</button>
+        <button (click)="triggerResourceError()" class="btn-error">Lien Cassé</button>
+      </div>
+
+      <div class="video-container">
+        <video #monitorVideo controls width="100%" poster="assets/video-placeholder.png">
+          <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          Votre navigateur ne supporte pas la vidéo.
+        </video>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="interaction-title">
+      <div class="card-icon">⚡</div>
+      <span class="label">Réactivité (FID / INP)</span>
+      <h3 id="interaction-title">Réactivité au clic</h3>
+      <p class="description">Testez si l'application répond immédiatement ou si elle semble "gelée" au clic.</p>
+      
+      <button (click)="triggerInteractionDelay()" class="btn-action">
+        Simuler un clic "gelé"
+      </button>
+      <div class="interaction-status" *ngIf="interactionFeedback">
+        {{ interactionFeedback }}
+      </div>
+    </section>
+
+  </div>
+</div>

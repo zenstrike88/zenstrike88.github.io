@@ -1,0 +1,143 @@
+.performance-wrapper {
+  padding: 30px;
+  background: #020617;
+  color: #f1f5f9;
+  min-height: calc(100vh - 64px);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.header {
+  margin-bottom: 40px;
+  border-left: 4px solid #818cf8;
+  padding-left: 20px;
+}
+
+.header h1 { font-size: 1.8rem; margin: 0; }
+.subtitle { color: #94a3b8; margin-top: 5px; }
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 24px;
+  transition: transform 0.2s, border-color 0.2s;
+  position: relative;
+}
+
+.card:hover {
+  border-color: #334155;
+  transform: translateY(-2px);
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #818cf8;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.description {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 10px 0 20px;
+  line-height: 1.5;
+}
+
+.action-group {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-action, .btn-error {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.btn-action {
+  background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+}
+
+.btn-action:hover:not(:disabled) { background: #334155; }
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-error {
+  background: #450a0a;
+  color: #fca5a5;
+  border: 1px solid #7f1d1d;
+}
+
+.btn-error:hover { background: #7f1d1d; }
+
+/* Feedback visuel pour le CLS */
+.dynamic-content {
+  background: #f59e0b;
+  color: #451a03;
+  padding: 20px;
+  border-radius: 8px;
+  font-weight: 900;
+  text-align: center;
+  margin: 15px 0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+/* Zone d'image LCP */
+.preview-zone {
+  margin-top: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 180px;
+  background: #020617;
+  position: relative;
+}
+
+.loader-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.8);
+  font-size: 0.8rem;
+}
+
+.responsive-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Statut d'interaction (INP) */
+.interaction-status {
+  margin-top: 15px;
+  padding: 10px;
+  background: #064e3b;
+  color: #6ee7b7;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  text-align: center;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

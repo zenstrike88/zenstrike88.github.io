@@ -1,0 +1,42 @@
+<div class="whiteapp-container">
+  <aside class="sidebar">
+    <label for="country-select" class="section-title">Géolocalisation</label>
+    <select id="country-select" (change)="onCountryChange($event)">
+      <option value="">Choisir un pays...</option>
+      <option *ngFor="let c of countries" [value]="c.value">
+        {{ c.label }}
+      </option>
+    </select>
+
+    <div *ngIf="countryInfoVisible" class="stat-card">
+      <div class="data-row">
+        <span>Capitale :</span>
+        <b class="accent">{{ capital }}</b>
+      </div>
+    </div>
+
+    <span class="section-title">Erreurs & Crashs</span>
+    <button (click)="triggerJSException()" class="btn btn-error">JS Exception</button>
+    <button (click)="trigger404()" class="btn btn-error">HTTP 404</button>
+
+    <span class="section-title">Performances</span>
+    <button (click)="triggerCPUStress()" class="btn btn-warn">CPU Stress (3s)</button>
+    <button (click)="triggerMemoryLeak()" class="btn btn-warn">Memory Leak</button>
+    <button (click)="triggerTrafficSpike()" class="btn btn-stress">Traffic Spike</button>
+
+    <div class="console-container">
+      <div class="console-header">
+        <span>LOGS SYSTEME</span>
+        <button (click)="clearLogs()">Vider</button>
+      </div>
+      <div class="console-body">
+        <div *ngFor="let log of logs" class="log-line">
+          <span class="log-time">[{{ log.time }}]</span>
+          <span [ngClass]="'log-msg-' + log.type">{{ log.message }}</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="map" id="map" aria-label="Carte de géolocalisation"></main>
+</div>
