@@ -20,17 +20,20 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "public",
+            "outputPath": {
+              "base": "public",
+              "browser": ""
+            },
             "index": "src/index.html", 
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-                "assets": [
-                  {
-                    "glob": "**/*",
-                    "input": "src/assets"
-                  },
-                  "src/favicon.ico"
-                ],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              }
+            ],
             "styles": [
               "node_modules/leaflet/dist/leaflet.css",
               "src/styles.css"
