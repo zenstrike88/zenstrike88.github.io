@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build:ci": "ng build --base-href /",
+    "build:ci": "ng build --base-href / && cp docs/index.html docs/404.html",
     "watch": "ng build --watch --configuration development",
     "test:ci": "ng test",
     "lint": "ng lint"
