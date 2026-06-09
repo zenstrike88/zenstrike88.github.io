@@ -42,3 +42,9 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+terraform_files/terraform.tfvars
+terraform_files/.terraform/
+terraform_files/.terraform.lock.hcl
+terraform_files/terraform.tfstate
+terraform_files/terraform.tfstate.backup
+terraform.tfvars
