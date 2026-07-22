@@ -17,12 +17,16 @@
 
     <span class="section-title">Erreurs & Crashs</span>
     <button (click)="triggerJSException()" class="btn btn-error">JS Exception</button>
-    <button (click)="trigger404()" class="btn btn-error">HTTP 404</button>
+    <button (click)="trigger404()" class="btn btn-error">HTTP 404 (backend)</button>
+    <button (click)="triggerBackendError()" class="btn btn-error">Erreur 500 (backend)</button>
 
     <span class="section-title">Performances</span>
     <button (click)="triggerCPUStress()" class="btn btn-warn">CPU Stress (3s)</button>
     <button (click)="triggerMemoryLeak()" class="btn btn-warn">Memory Leak</button>
-    <button (click)="triggerTrafficSpike()" class="btn btn-stress">Traffic Spike</button>
+    <button (click)="triggerTrafficSpike()" class="btn btn-stress">Traffic Spike (backend)</button>
+
+    <span class="section-title">Business Events</span>
+    <button (click)="sendBusinessEvent()" class="btn btn-stress">Envoyer un Business Event</button>
 
     <div class="console-container">
       <div class="console-header">

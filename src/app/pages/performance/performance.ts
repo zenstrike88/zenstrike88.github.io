@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MonitoringApiService } from '../../services/monitoring-api.service';
 
 @Component({
   selector: 'app-performance', // Corrigé : 'ardian-monitoring-performance' -> 'app-performance'
@@ -9,6 +10,8 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./performance.css']
 })
 export class PerformanceComponent {
+
+  constructor(private api: MonitoringApiService) {}
 
   @ViewChild('monitorVideo') videoElement!: ElementRef<HTMLVideoElement>;
 
@@ -33,15 +36,14 @@ export class PerformanceComponent {
   }
 
   triggerNetworkDelay(): void {
+    // Avant : httpbin.org/delay/5, service externe non tracé.
+    // Maintenant : notre backend /api/slow (500-2000ms) -> vrai TTFB lent,
+    // tracé de bout en bout et corrélé à la session RUM dans Dynatrace.
     this.isNetworkLoading = true;
-    fetch('https://httpbin.org/delay/5')
-      .then(response => {
-        if (!response.ok) throw new Error('Délai expiré');
-        this.isNetworkLoading = false;
-      })
-      .catch(() => {
-        this.isNetworkLoading = false;
-      });
+    this.api.triggerSlowBackend().subscribe({
+      next: () => (this.isNetworkLoading = false),
+      error: () => (this.isNetworkLoading = false),
+    });
   }
 
   triggerInteractionDelay(): void {

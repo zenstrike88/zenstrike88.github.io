@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
+import { MonitoringApiService } from '../../services/monitoring-api.service';
 
 @Component({
   selector: 'app-alertes', // Corrigé : doit commencer par 'app-'
@@ -10,6 +11,8 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./alertes.component.css']
 })
 export class AlertesComponent implements OnInit, OnDestroy {
+
+  constructor(private api: MonitoringApiService) {}
 
   map!: L.Map;
   private leakInterval: ReturnType<typeof setInterval> | undefined; // Corrigé : évite 'any'
@@ -62,8 +65,28 @@ export class AlertesComponent implements OnInit, OnDestroy {
   }
 
   trigger404() {
-    fetch('/api/monitoring/v1/alert-test-404');
-    this.log('Requête 404 envoyée', 'warn');
+    // Avant : fetch('/api/monitoring/v1/alert-test-404') -> 404 renvoyé par
+    // GitHub Pages lui-même, aucun backend impliqué.
+    // Maintenant : vraie route backend inexistante -> span tracé en erreur,
+    // log WARN, visible dans les Distributed Traces Dynatrace.
+    this.api.triggerNotFound().subscribe({
+      next: () => this.log('Requête 404 envoyée (backend)', 'warn'),
+      error: () => this.log('Requête 404 envoyée (backend)', 'warn'),
+    });
+  }
+
+  triggerBackendError() {
+    this.api.triggerBackendError().subscribe({
+      next: () => this.log('Erreur 500 backend déclenchée', 'error'),
+      error: () => this.log('Erreur 500 backend déclenchée', 'error'),
+    });
+  }
+
+  sendBusinessEvent() {
+    this.api.sendBusinessEvent('demo.alert.triggered_from_ui', { source: 'alertes-page' }).subscribe({
+      next: () => this.log('Business Event envoyé à Dynatrace', 'success'),
+      error: (err) => this.log(`Échec envoi Business Event : ${err.message}`, 'error'),
+    });
   }
 
   triggerCPUStress() {
@@ -87,9 +110,12 @@ export class AlertesComponent implements OnInit, OnDestroy {
   }
 
   triggerTrafficSpike() {
-    this.log('Pic de trafic : 100 requêtes', 'info');
+    // Avant : 100 appels vers jsonplaceholder.typicode.com (externe, non tracé).
+    // Maintenant : 100 appels vers notre propre backend -> visible comme un vrai
+    // pic de charge dans les traces/métriques Dynatrace du service demo-backend.
+    this.log('Pic de trafic : 100 requêtes vers le backend', 'info');
     for (let i = 0; i < 100; i++) {
-      fetch('https://jsonplaceholder.typicode.com/posts/1');
+      this.api.ping().subscribe({ error: () => undefined });
     }
   }
 
